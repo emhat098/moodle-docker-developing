@@ -1,0 +1,35 @@
+services:
+  moodle:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: moodle
+    ports:
+      - "80:80"
+    volumes:
+      - ./../moodle:/var/www/html  # Mount the entire project root
+      - moodledata:/var/www/moodledata
+    environment:
+      - MOODLE_DATABASE_TYPE=pgsql
+      - MOODLE_DATABASE_HOST=moodledb
+      - MOODLE_DATABASE_USER=moodleuser
+      - MOODLE_DATABASE_PASSWORD=123456
+      - MOODLE_DATABASE_NAME=localdb
+    depends_on:
+      - moodledb
+
+  moodledb:
+    image: postgres:16
+    container_name: moodle-db
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: localdb
+      POSTGRES_USER: moodleuser
+      POSTGRES_PASSWORD: 123456
+    volumes:
+      - dbdata:/var/lib/postgresql/data
+
+volumes:
+  moodledata:
+  dbdata:
